@@ -1,9 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import ResumeForm from "@/components/ResumeForm";
-import { cookies } from "next/headers";
 
-export default async function ProtectedPage() {
+export default async function CreateResume() {
   const supabase = createClient();
 
   const {
@@ -14,9 +13,5 @@ export default async function ProtectedPage() {
     return redirect("/login");
   }
 
-  return (
-    <div className="flex-1 w-full">
-      <ResumeForm cookies2={cookies().toString()} />
-    </div>
-  );
+  return <ResumeForm />;
 }

@@ -18,8 +18,8 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ formData }) => {
   const [layout, setLayout] = React.useState("classic");
 
   const LayoutSelector = () => (
-    <Card className="p-6 mb-6">
-      <h3 className="text-lg font-semibold mb-4">Select Layout</h3>
+    <div className="px-6 py-4 mb-6 border border-t-0 bg-white shadow-sm rounded-b-md">
+      {/* <h3 className="text-lg font-semibold mb-4">Select Layout</h3> */}
       <RadioGroup
         value={layout}
         onValueChange={setLayout}
@@ -34,21 +34,19 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ formData }) => {
           <Label htmlFor="modern">Modern</Label>
         </div>
       </RadioGroup>
-    </Card>
+    </div>
   );
 
   return (
     <div className="space-y-6">
-      <LayoutSelector />
-      <Card className="p-6 bg-blue-50">
+      <Card className="px-6 pb-6 pt-0 bg-blue-50">
+        <LayoutSelector />
         {layout === "modern" ? (
           <>
-            <h3 className="font-semibold mb-4">Modern Layout</h3>
             <ModernLayout formData={formData} />
           </>
         ) : (
           <>
-            <h3 className="font-semibold mb-4">Classic Layout</h3>
             <ClassicLayout formData={formData} />
           </>
         )}

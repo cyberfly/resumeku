@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 
 const ModernLayout = ({ formData }) => (
-  <div className="flex flex-row border shadow-md rounded bg-white">
+  <div className="flex flex-row border rounded bg-white">
     {/* left col */}
     <div className="flex-1 w-full px-8 py-6 relative">
       <div className="flex items-center mb-6">
@@ -46,7 +46,9 @@ const ModernLayout = ({ formData }) => (
                     {exp.duration}
                   </span>
                 </div>
-                <p className="italic mb-2 text-gray-600 break-words">{exp.company}</p>
+                <p className="italic mb-2 text-gray-600 break-words">
+                  {exp.company}
+                </p>
                 <p className="text-gray-600 text-sm break-words leading-relaxed">
                   {exp.responsibilities}
                 </p>
@@ -56,7 +58,7 @@ const ModernLayout = ({ formData }) => (
         </div>
       </div>
 
-      <div className="">
+      <div className={formData.experience.length > 3 ? "break-before-page" : ""}>
         <h2 className="text-lg uppercase mt-6 mb-3">Education</h2>
         {formData.education.map((edu, index) => (
           <div key={index} className="mb-3">
@@ -75,7 +77,6 @@ const ModernLayout = ({ formData }) => (
     <div className="bg-slate-200 w-56 px-4 py-4">
       <h2 className="text-lg uppercase mb-3">Contact</h2>
       <div className="border-t border-slate-300 mt-2 mb-4"></div>
-
       <h4 className="text-sm font-bold mt-2">Email</h4>
       <p className="text-sm break-words overflow-hidden text-ellipsis">
         {formData.personal_info.email}
@@ -98,20 +99,26 @@ const ModernLayout = ({ formData }) => (
       <div className="border-t border-slate-300 mt-2 mb-4"></div>
       <ul className="list-disc list-inside">
         {formData.skills.map((skill, index) => (
-          <li key={index} className="break-words">{skill}</li>
+          <li key={index} className="break-words">
+            {skill}
+          </li>
         ))}
       </ul>
 
-      <h2 className="text-lg uppercase mt-6 mb-3">References</h2>
-      <div className="border-t border-slate-300 mt-2 mb-4"></div>
-      {formData.references.map((reference, index) => (
-        <div key={index} className="mb-3">
-          <h3 className="font-semibold break-words">{reference.name}</h3>
-          <p className="break-words">{reference.info}</p>
-        </div>
-      ))}
+      {formData.references && formData.references.length > 0 && (
+        <>
+          <h2 className="text-lg uppercase mt-6 mb-3">References</h2>
+          <div className="border-t border-slate-300 mt-2 mb-4"></div>
+          {formData.references.map((reference, index) => (
+            <div key={index} className="mb-3">
+              <h3 className="font-semibold break-words">{reference.name}</h3>
+              <p className="break-words">{reference.info}</p>
+            </div>
+          ))}
+        </>
+      )}
 
-      {formData.salary.display && (
+      {formData.salary && formData.salary.display && (
         <>
           <h2 className="text-lg uppercase mt-6 mb-3">Salary</h2>
           <div className="border-t border-slate-300 mt-2 mb-4"></div>

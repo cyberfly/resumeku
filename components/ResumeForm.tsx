@@ -19,11 +19,9 @@ const steps = [
   "Skills",
   "References",
   "Salary",
-  "Preview",
 ];
 
 export default function ResumeForm(props: any) {
-  const cookies2 = props.cookies2;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(0);
@@ -236,8 +234,6 @@ export default function ResumeForm(props: any) {
         return renderReferences();
       case 5:
         return renderSalary();
-      case 6:
-        return <ResumePreview formData={formData} />;
       default:
         return <div>Unknown step</div>;
     }
@@ -249,28 +245,9 @@ export default function ResumeForm(props: any) {
       handleStepClick(currentStep + 1);
     } else {
       console.log("Form submitted:", formData);
-
-      createResume(formData);
-      return;
-
-      try {
-        const response = await fetch("/api/create-resume", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: cookies2,
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) throw new Error("Failed to submit resume");
-
-        const result = await response.json();
-        console.log("Resume submitted successfully:", result);
-        router.push("/resume-submitted");
-      } catch (error) {
-        console.error("Error submitting resume:", error);
-      }
+      await createResume(formData);
+      clearFormData();
+      router.push("/my-resumes");
     }
   };
 
@@ -303,31 +280,36 @@ export default function ResumeForm(props: any) {
           company: "Tech Solutions Inc.",
           position: "Senior Software Developer",
           duration: "2020 - Present",
-          responsibilities: "Developed and maintained web applications using React and Node.js. Led a team of 5 junior developers.",
+          responsibilities:
+            "Developed and maintained web applications using React and Node.js. Led a team of 5 junior developers.",
         },
         {
           company: "StartUp Innovations",
           position: "Junior Web Developer",
           duration: "2018 - 2020",
-          responsibilities: "Assisted in the development of responsive websites and implemented UI/UX designs.",
+          responsibilities:
+            "Assisted in the development of responsive websites and implemented UI/UX designs.",
         },
         {
           company: "Global Systems Corp.",
           position: "Software Engineer",
           duration: "2016 - 2018",
-          responsibilities: "Developed and optimized backend services using Java and Spring Framework. Implemented RESTful APIs and improved system performance.",
+          responsibilities:
+            "Developed and optimized backend services using Java and Spring Framework. Implemented RESTful APIs and improved system performance.",
         },
         {
           company: "DataTech Solutions",
           position: "Data Analyst Intern",
           duration: "Summer 2015",
-          responsibilities: "Analyzed large datasets using SQL and Python. Created data visualization dashboards to present insights to stakeholders.",
+          responsibilities:
+            "Analyzed large datasets using SQL and Python. Created data visualization dashboards to present insights to stakeholders.",
         },
         {
           company: "CodeCraft Academy",
           position: "Teaching Assistant",
           duration: "2014 - 2016",
-          responsibilities: "Assisted in teaching introductory programming courses. Conducted code reviews and provided mentorship to students.",
+          responsibilities:
+            "Assisted in teaching introductory programming courses. Conducted code reviews and provided mentorship to students.",
         },
       ],
       skills: ["JavaScript", "React", "Node.js", "Python", "SQL", "Git"],
@@ -354,52 +336,96 @@ export default function ResumeForm(props: any) {
     localStorage.setItem("resumeData", JSON.stringify(sampleData));
   };
 
+  const clearFormData = () => {
+    const emptyFormData = {
+      personal_info: {},
+      education: [],
+      experience: [],
+      skills: [],
+      references: [],
+      salary: {
+        current: "",
+        expected: "",
+        display: false,
+      },
+    };
+    setFormData(emptyFormData);
+    localStorage.removeItem("resumeData");
+  };
+
   return (
-    <div className="w-[900px] mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Create Your Resume
-      </h1>
-      <div className="flex justify-between mb-8">
-        {steps.map((step, index) => (
-          <button
-            key={step}
-            onClick={() => handleStepClick(index)}
-            className={`px-4 py-2 rounded-full ${
-              currentStep === index
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            } transition-colors duration-200`}
-          >
-            {step}
-          </button>
-        ))}
-      </div>
-      <button
-        onClick={seedFormData}
-        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200 mb-4"
-      >
-        Seed Sample Data
-      </button>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {renderStepContent()}
-        <div className="flex justify-between">
-          {currentStep > 0 && (
+    <div className="container mx-auto p-6">
+      <div className="flex">
+        {/* left col */}
+
+        <div className="flex-1 w-full pr-8">
+          <h1 className="text-3xl font-bold mb-8 text-left">
+            Create Your Resume
+          </h1>
+
+          <div className="flex flex-wrap justify-betweena mb-8 gap-2">
+            {steps.map((step, index) => (
+              <button
+                key={step}
+                onClick={() => handleStepClick(index)}
+                className={`px-4 py-2 rounded-full ${
+                  currentStep === index
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                } transition-colors duration-200 relative`}
+              >
+                <span className="absolute -top-2 -left-2 bg-gray-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {index + 1}
+                </span>
+                {step}
+              </button>
+            ))}
+          </div>
+          <div className="flex space-x-4 mb-4">
             <button
-              type="button"
-              onClick={() => handleStepClick(currentStep - 1)}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors duration-200"
+              onClick={seedFormData}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200"
             >
-              Previous
+              Seed Sample Data
             </button>
-          )}
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-          >
-            {currentStep === steps.length - 1 ? "Submit" : "Next"}
-          </button>
+            <button
+              onClick={clearFormData}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
+            >
+              Clear Form
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {renderStepContent()}
+            <div className="flex justify-between">
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  onClick={() => handleStepClick(currentStep - 1)}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors duration-200"
+                >
+                  Previous
+                </button>
+              )}
+
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+              >
+                {currentStep === steps.length - 1 ? "Submit" : "Next"}
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+        {/* end left col */}
+
+        {/* right col */}
+        <div className="w-[50%] px-4">
+          <ResumePreview formData={formData} />
+        </div>
+
+        {/* end right col */}
+      </div>
     </div>
   );
 }

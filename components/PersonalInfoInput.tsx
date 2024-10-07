@@ -41,7 +41,7 @@ const PersonalInfoInput: React.FC<PersonalInfoInputProps> = ({
       <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
 
       <div className="flex divide-x">
-        <div className="flex-1 w-full space-y-4 pr-8">
+        <div className="flex-1 w-full space-y-4 pr-4">
           {/* Existing input fields */}
           <input
             type="text"
@@ -84,7 +84,7 @@ const PersonalInfoInput: React.FC<PersonalInfoInputProps> = ({
           />
         </div>
         {/* right col */}
-        <div className="w-64 px-4">
+        <div className="w-[40%] px-4">
           <div className="">
             {(previewImage || personalInfo.image) && (
               <Image

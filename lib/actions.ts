@@ -6,11 +6,9 @@ import { redirect } from "next/navigation";
 import { writeFile } from "fs/promises";
 import path from "path";
 
+const supabase = createClient();
+
 export async function createResume(formData: FormData) {
-  console.log(formData);
-
-  const supabase = createClient();
-
   try {
     const resumeData = {
       ...formData,
@@ -45,4 +43,54 @@ export async function uploadImage(data: FormData) {
 
   await writeFile(filepath, buffer);
   return `/uploads/${filename}`;
+}
+
+export async function duplicateResume(resumeId: string) {
+  if (!isAuthenticated()) {
+    return {
+      error: "Unauthorize",
+    };
+  }
+
+  const { data: originalResume, error: fetchError } = await supabase
+    .from("resumes")
+    .select("*")
+    .eq("id", resumeId)
+    .single();
+
+  if (fetchError) {
+    console.error("Error fetching original resume:", fetchError);
+    return;
+  }
+
+  const { data: newResume, error: insertError } = await supabase
+    .from("resumes")
+    .insert({
+      ...originalResume,
+      id: undefined,
+      title: `${originalResume.title} (Copy)`,
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Error duplicating resume:", insertError);
+    return;
+  }
+
+  // Refresh the page to show the new resume
+  revalidatePath("/my-resumes");
+  redirect("/my-resumes");
+}
+
+async function isAuthenticated() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return false;
+  }
+
+  return user;
 }
