@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Edit, Download, Copy, Trash } from "lucide-react";
-import { duplicateResume } from "@/lib/actions";
+import { duplicateResume, deleteResume } from "@/lib/actions";
+import Link from "next/link";
 
 interface ResumeActionsProps {
   resumeId: string;
@@ -22,7 +23,7 @@ export default function ResumeActions({ resumeId }: ResumeActionsProps) {
 
   const handleDelete = async () => {
     try {
-      // Implement the delete functionality here
+      await deleteResume(resumeId);
       // You might want to add a confirmation dialog before deleting
       // await deleteResume(resumeId);
       // Add feedback to the user here
@@ -34,12 +35,11 @@ export default function ResumeActions({ resumeId }: ResumeActionsProps) {
 
   return (
     <div className="flex gap-2 mt-2">
-      <Button
-        variant="outline"
-        onClick={() => window.open(`/print?id=${resumeId}`, "_blank")}
-      >
-        <Edit className="mr-2 h-4 w-4" /> Edit
-      </Button>
+      <Link href={`/create-resume?resume_id=${resumeId}`}>
+        <Button variant="outline">
+          <Edit className="mr-2 h-4 w-4" /> Edit
+        </Button>
+      </Link>
       <Button
         variant="outline"
         onClick={() => window.open(`/print?id=${resumeId}`, "_blank")}

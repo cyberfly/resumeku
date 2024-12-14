@@ -5,15 +5,24 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { cookies } from "next/headers";
 
 const supabase = createClient();
 
 export async function createResume(formData: FormData) {
   try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
     const resumeData = {
       ...formData,
       title: `${formData.personal_info.fullName}'s Resume`,
-      user_id: "f03396ad-2f69-4312-b4fc-b594f06ad958",
+      user_id: user.id,
     };
 
     const { data, error } = await supabase.from("resumes").insert(resumeData);
@@ -23,12 +32,27 @@ export async function createResume(formData: FormData) {
     console.log("data", data);
   } catch (error) {
     console.log("error", error);
+
+    cookies().set(
+      "flash",
+      JSON.stringify({
+        type: "error",
+        message: "Failed to create resume",
+      })
+    );
   } finally {
+    cookies().set(
+      "flash",
+      JSON.stringify({
+        type: "success",
+        message: "Resume created successfully!",
+      })
+    );
+
     revalidatePath("/dashboard");
     redirect("/dashboard");
   }
 }
-
 export async function uploadImage(data: FormData) {
   const file: File | null = data.get("file") as unknown as File;
   if (!file) {
@@ -81,6 +105,55 @@ export async function duplicateResume(resumeId: string) {
   // Refresh the page to show the new resume
   revalidatePath("/my-resumes");
   redirect("/my-resumes");
+}
+
+export async function updateResume(resumeId: string, formData: FormData) {
+  if (!isAuthenticated()) {
+    return {
+      error: "Unauthorized",
+    };
+  }
+
+  console.log("formData", formData);
+
+  const updatedData = formData;
+
+  const { data, error } = await supabase
+    .from("resumes")
+    .update(updatedData)
+    .eq("id", resumeId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating resume:", error);
+    return { error: "Failed to update resume" };
+  }
+
+  revalidatePath("/my-resumes");
+  return { success: true, data };
+}
+
+export async function deleteResume(resumeId: string) {
+  if (!isAuthenticated()) {
+    return {
+      error: "Unauthorized",
+    };
+  }
+
+  const { error } = await supabase.from("resumes").delete().eq("id", resumeId);
+
+  if (error) {
+    console.error("Error deleting resume:", error);
+    return { error: "Failed to delete resume" };
+  }
+
+  revalidatePath("/my-resumes");
+  return { success: true };
+}
+
+export async function clearFlash() {
+  cookies().delete("flash");
 }
 
 async function isAuthenticated() {

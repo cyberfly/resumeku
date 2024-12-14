@@ -10,8 +10,7 @@ import SalaryInput from "./SalaryInput";
 import ReferencesInput from "./ReferencesInput";
 
 import ResumePreview from "./ResumePreview";
-import { createResume } from "@/lib/actions";
-
+import { createResume, updateResume } from "@/lib/actions";
 const steps = [
   "Personal Info",
   "Education",
@@ -21,36 +20,45 @@ const steps = [
   "Salary",
 ];
 
-export default function ResumeForm(props: any) {
+export default function ResumeForm({ initialData }: { initialData?: any }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({
-    personal_info: {},
-    education: [],
-    experience: [],
-    skills: [],
-    references: [],
-    salary: {
-      current: "",
-      expected: "",
-      display: false,
-    },
+
+  const [showPreview, setShowPreview] = useState(true);
+
+  const [formData, setFormData] = useState(() => {
+    if (initialData) {
+      return initialData;
+    }
+
+    const storedData = localStorage.getItem("resumeData");
+    return storedData
+      ? JSON.parse(storedData)
+      : {
+          personal_info: {},
+          education: [],
+          experience: [],
+          skills: [],
+          references: [],
+          salary: {
+            current: "",
+            expected: "",
+            display: false,
+          },
+        };
   });
 
   useEffect(() => {
     const step = parseInt(searchParams.get("step") || "0");
     setCurrentStep(step);
-
-    const storedData = localStorage.getItem("resumeData");
-    if (storedData) {
-      setFormData(JSON.parse(storedData));
-    }
   }, [searchParams]);
 
   const handleStepClick = (index: number) => {
     setCurrentStep(index);
-    router.push(`/create-resume?step=${index}`);
+    const currentParams = new URLSearchParams(searchParams.toString());
+    currentParams.set("step", index.toString());
+    router.push(`/create-resume?${currentParams.toString()}`);
   };
 
   const handleInputChange = (
@@ -244,10 +252,12 @@ export default function ResumeForm(props: any) {
     if (currentStep < steps.length - 1) {
       handleStepClick(currentStep + 1);
     } else {
-      console.log("Form submitted:", formData);
-      await createResume(formData);
-      clearFormData();
-      router.push("/my-resumes");
+      if (initialData) {
+        await updateResume(initialData.id, formData);
+      } else {
+        await createResume(formData);
+        clearFormData();
+      }
     }
   };
 
@@ -355,45 +365,83 @@ export default function ResumeForm(props: any) {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex">
+      <div className="text-right">
+        <button
+          onClick={() => setShowPreview(!showPreview)}
+          className="mb-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-all duration-200 inline-flex items-center gap-2"
+        >
+          {showPreview ? (
+            <>
+              <span>Hide Preview</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
+            </>
+          ) : (
+            <>
+              <span>Show Preview</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
+      <div className="flex flex-col lg:flex-row">
         {/* left col */}
 
         <div className="flex-1 w-full pr-8">
-          <h1 className="text-3xl font-bold mb-8 text-left">
-            Create Your Resume
-          </h1>
-
           <div className="flex flex-wrap justify-betweena mb-8 gap-2">
             {steps.map((step, index) => (
               <button
                 key={step}
                 onClick={() => handleStepClick(index)}
-                className={`px-4 py-2 rounded-full ${
+                className={`px-6 py-3 rounded-lg shadow-sm ${
                   currentStep === index
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                } transition-colors duration-200 relative`}
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium"
+                    : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"
+                } transition-all duration-200 relative`}
               >
-                <span className="absolute -top-2 -left-2 bg-gray-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -left-2 bg-blue-700 text-white text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
                   {index + 1}
                 </span>
-                {step}
+                <span className="ml-2">{step}</span>
               </button>
             ))}
           </div>
           <div className="flex space-x-4 mb-4">
             <button
               onClick={seedFormData}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-200"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 shadow-sm font-medium border border-emerald-700"
             >
               Seed Sample Data
             </button>
             <button
               onClick={clearFormData}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
+              className="px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition-all duration-200 shadow-sm font-medium border border-rose-700"
             >
               Clear Form
-            </button>
+            </button>{" "}
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             {renderStepContent()}
@@ -408,21 +456,35 @@ export default function ResumeForm(props: any) {
                 </button>
               )}
 
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-              >
-                {currentStep === steps.length - 1 ? "Submit" : "Next"}
-              </button>
+              {currentStep != steps.length - 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleStepClick(currentStep + 1)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+                >
+                  Next
+                </button>
+              )}
+
+              {currentStep === steps.length - 1 && (
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+                >
+                  {initialData ? "Save" : "Submit"}
+                </button>
+              )}
             </div>
           </form>
         </div>
         {/* end left col */}
 
         {/* right col */}
-        <div className="w-[50%] px-4">
-          <ResumePreview formData={formData} />
-        </div>
+        {showPreview && (
+          <div className="w-full lg:w-[50%] lg:px-4 mt-8 lg:mt-0">
+            <ResumePreview formData={formData} />
+          </div>
+        )}
 
         {/* end right col */}
       </div>
