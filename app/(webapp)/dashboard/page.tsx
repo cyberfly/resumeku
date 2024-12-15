@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Eye, Copy, Download, Palette, Database, Wand2 } from "lucide-react";
-import FlashMessage from "@/components/FlashMessage";
+// import FlashMessage from "@/components/FlashMessage";
 
 export default async function Dashboard() {
   const supabase = createClient();
@@ -22,8 +22,6 @@ export default async function Dashboard() {
         <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">
           Welcome to Your Dashboard
         </h1>
-
-        <FlashMessage />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link
