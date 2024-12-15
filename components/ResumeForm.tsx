@@ -8,6 +8,7 @@ import ExperienceInput from "./ExperienceInput";
 import PersonalInfoInput from "./PersonalInfoInput";
 import SalaryInput from "./SalaryInput";
 import ReferencesInput from "./ReferencesInput";
+import { ResumeFormData } from "@/types";
 
 import ResumePreview from "./ResumePreview";
 import { createResume, updateResume } from "@/lib/actions";
@@ -66,29 +67,29 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
     index?: number
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData) => {
+    setFormData((prevData: ResumeFormData) => {
       let newData;
       if (currentStep === 0) {
         newData = {
           ...prevData,
           personal_info: { ...prevData.personal_info, [name]: value },
         };
-      } else if (currentStep === 1) {
+      } else if (currentStep === 1 && typeof index === "number") {
         const newEducation = [...prevData.education];
         newEducation[index] = { ...newEducation[index], [name]: value };
         newData = { ...prevData, education: newEducation };
-      } else if (currentStep === 2) {
+      } else if (currentStep === 2 && typeof index === "number") {
         const newExperience = [...prevData.experience];
         newExperience[index] = { ...newExperience[index], [name]: value };
         newData = { ...prevData, experience: newExperience };
-      } else if (currentStep === 3) {
+      } else if (currentStep === 3 && typeof index === "number") {
         newData = prevData;
-      } else if (currentStep === 4) {
+      } else if (currentStep === 4 && typeof index === "number") {
         // References step
         const newReferences = [...prevData.references];
         newReferences[index] = { ...newReferences[index], [name]: value };
         newData = { ...prevData, references: newReferences };
-      } else if (currentStep === 5) {
+      } else if (currentStep === 5 && typeof index === "number") {
         newData = {
           ...prevData,
           salary: { ...prevData.salary, [name]: value },
@@ -100,7 +101,7 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
   };
 
   const addEntry = (type: "education" | "experience" | "references") => {
-    setFormData((prevData) => ({
+    setFormData((prevData: ResumeFormData) => ({
       ...prevData,
       [type]: [...prevData[type], {}],
     }));
@@ -110,7 +111,7 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
     type: "education" | "experience" | "references",
     index: number
   ) => {
-    setFormData((prevData) => {
+    setFormData((prevData: ResumeFormData) => {
       const newData = {
         ...prevData,
         [type]: prevData[type].filter((_, i) => i !== index),
@@ -127,7 +128,7 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
   ) => {
     if (toIndex < 0 || toIndex >= formData[type].length) return;
 
-    setFormData((prevData) => {
+    setFormData((prevData: ResumeFormData) => {
       const newEntries = [...prevData[type]];
       const [movedItem] = newEntries.splice(fromIndex, 1);
       newEntries.splice(toIndex, 0, movedItem);
@@ -145,7 +146,7 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
   const handleImageUpload = (file: File) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      setFormData((prevData) => ({
+      setFormData((prevData: ResumeFormData) => ({
         ...prevData,
         personal_info: {
           ...prevData.personal_info,
@@ -159,7 +160,9 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
   const renderPersonalInfo = () => (
     <PersonalInfoInput
       personalInfo={formData.personal_info}
-      onInputChange={handleInputChange}
+      onInputChange={(
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      ) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
       onImageUpload={handleImageUpload}
     />
   );
@@ -179,7 +182,10 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
   const renderExperience = () => (
     <ExperienceInput
       experience={formData.experience}
-      onInputChange={handleInputChange}
+      onInputChange={(
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        index: number
+      ) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>, index)}
       onAddEntry={() => addEntry("experience")}
       onRemoveEntry={(index) => removeEntry("experience", index)}
       onReorderEntry={(fromIndex, toIndex) =>
@@ -194,7 +200,7 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
       <SkillsInput
         skills={formData.skills}
         onSkillsChange={(newSkills) => {
-          setFormData((prevData) => {
+          setFormData((prevData: ResumeFormData) => {
             const newData = { ...prevData, skills: newSkills };
             localStorage.setItem("resumeData", JSON.stringify(newData));
             return newData;
@@ -218,7 +224,7 @@ export default function ResumeForm({ initialData }: { initialData?: any }) {
       salary={formData.salary}
       onInputChange={(e) => handleInputChange(e)}
       onCheckboxChange={(checked, field) =>
-        setFormData((prev) => {
+        setFormData((prev: ResumeFormData) => {
           const newSalary = { ...prev.salary, [field]: checked };
           const newData = { ...prev, salary: newSalary };
           localStorage.setItem("resumeData", JSON.stringify(newData));
