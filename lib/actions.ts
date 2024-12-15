@@ -6,10 +6,11 @@ import { redirect } from "next/navigation";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { cookies } from "next/headers";
+import { ResumeFormData } from "@/types";
 
 const supabase = createClient();
 
-export async function createResume(formData: FormData) {
+export async function createResume(formData: ResumeFormData) {
   try {
     const {
       data: { user },

@@ -4,14 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import ClassicLayout from "@/components/resume_layouts/ClassicLayout";
 import ModernLayout from "@/components/resume_layouts/ModernLayout";
+import { ResumeFormData } from "@/types";
 
 interface ResumePreviewProps {
-  formData: {
-    personal_info: any;
-    education: any[];
-    experience: any[];
-    skills: string[];
-  };
+  formData: ResumeFormData;
 }
 
 const ResumePreview: React.FC<ResumePreviewProps> = ({ formData }) => {

@@ -1,24 +1,19 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Salary } from "@/types";
 
 interface SalaryInputProps {
-  salary: {
-    current: string;
-    expected: string;
-    display: boolean;
-    displayCurrent: boolean;
-    displayExpected: boolean;
-  };
+  salary: Salary;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onCheckboxChange: (checked: boolean, field: string) => void;
+  onCheckboxChange: (checked: boolean, field: keyof Salary) => void;
 }
 
-const SalaryInput: React.FC<SalaryInputProps> = ({
+const SalaryInput = ({
   salary,
   onInputChange,
   onCheckboxChange,
-}) => {
-  const handleCheckboxChange = (checked: boolean, field: string) => {
+}: SalaryInputProps) => {
+  const handleCheckboxChange = (checked: boolean, field: keyof Salary) => {
     if (field === "display") {
       onCheckboxChange(checked, field);
     } else {
@@ -37,7 +32,7 @@ const SalaryInput: React.FC<SalaryInputProps> = ({
           <Checkbox
             id="display-salary"
             checked={salary.display}
-            onCheckedChange={(checked) =>
+            onCheckedChange={(checked: boolean) =>
               handleCheckboxChange(checked, "display")
             }
           />
@@ -52,7 +47,7 @@ const SalaryInput: React.FC<SalaryInputProps> = ({
                 <Checkbox
                   id="display-expected-salary"
                   checked={salary.displayExpected}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={(checked: boolean) =>
                     handleCheckboxChange(checked, "displayExpected")
                   }
                 />
@@ -74,7 +69,7 @@ const SalaryInput: React.FC<SalaryInputProps> = ({
                 <Checkbox
                   id="display-current-salary"
                   checked={salary.displayCurrent}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={(checked: boolean) =>
                     handleCheckboxChange(checked, "displayCurrent")
                   }
                 />
