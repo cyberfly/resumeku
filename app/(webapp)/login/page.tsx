@@ -68,6 +68,19 @@ export default function Login({
 
       <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
         <form className="flex-1 flex flex-col w-full gap-2 text-foreground">
+          {/* demo info */}
+          <div className="bg-yellow-50 rounded-lg px-6 py-2 max-w-md w-full">
+            <h2 className="text-lg font-semibold mb-4">Try Demo Account</h2>
+            <div className="space-y-2 text-base">
+              <p>
+                Email: <span className="font-mono">cyberflyx+3@gmail.com</span>
+              </p>
+              <p>
+                Password: <span className="font-mono">asdf1234</span>
+              </p>
+            </div>
+          </div>
+
           <label className="text-md" htmlFor="email">
             Email
           </label>
