@@ -9,10 +9,19 @@ import ResumeActions from "@/components/ResumeActions";
 export default async function MyResumes() {
   const supabase = createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return redirect("/login");
+  }
+
   const fetchResumes = async () => {
     const { data, error } = await supabase
       .from("resumes")
       .select("id, title, created_at")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     if (error) {
       console.error(error);
@@ -22,14 +31,6 @@ export default async function MyResumes() {
   };
 
   const resumes = await fetchResumes();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return redirect("/login");
-  }
 
   return (
     <div className="min-h-screena bg-gradient-to-br from-gray-50 to-gray-100 flex-1 w-full flex flex-col items-center p-8">
