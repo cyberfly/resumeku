@@ -1,7 +1,8 @@
 import React from "react";
 import Image from "next/image";
+import { ResumeFormData } from "@/types";
 
-const ModernLayout = ({ formData }) => (
+const ModernLayout = ({ formData }: { formData: ResumeFormData }) => (
   <div className="flex flex-row border rounded bg-white">
     {/* left col */}
     <div className="flex-1 w-full px-8 py-6 relative">
@@ -58,7 +59,9 @@ const ModernLayout = ({ formData }) => (
         </div>
       </div>
 
-      <div className={formData.experience.length > 3 ? "break-before-page" : ""}>
+      <div
+        className={formData.experience.length > 3 ? "break-before-page" : ""}
+      >
         <h2 className="text-lg uppercase mt-6 mb-3">Education</h2>
         {formData.education.map((edu, index) => (
           <div key={index} className="mb-3">

@@ -1,7 +1,8 @@
 import React from "react";
 import Image from "next/image";
+import { ResumeFormData } from "@/types";
 
-const ClassicLayout = ({ formData }) => (
+const ClassicLayout = ({ formData }: { formData: ResumeFormData }) => (
   <div className="bg-white shadow-lg rounded-md border flex">
     {/* Left Column */}
     <div className="w-1/4 bg-slate-300 pr-4 border-r px-4 py-4">
@@ -14,21 +15,27 @@ const ClassicLayout = ({ formData }) => (
       />
       <h2 className="text-xl font-semibold mb-2">Contact</h2>
       <div className="break-words">
-        <p className="overflow-hidden text-ellipsis">{formData.personal_info.email}</p>
+        <p className="overflow-hidden text-ellipsis">
+          {formData.personal_info.email}
+        </p>
         <p>{formData.personal_info.phone}</p>
         <p>{formData.personal_info.address}</p>
-        <p className="overflow-hidden text-ellipsis">{formData.personal_info.website}</p>
+        <p className="overflow-hidden text-ellipsis">
+          {formData.personal_info.website}
+        </p>
       </div>
 
       <h2 className="text-xl font-semibold mt-4 mb-2">Skills</h2>
       <ul className="list-disc list-inside">
-        {formData.skills.map((skill, index) => (
-          <li key={index} className="break-words">{skill}</li>
+        {formData.skills.map((skill: string, index) => (
+          <li key={index} className="break-words">
+            {skill}
+          </li>
         ))}
       </ul>
 
       <h2 className="text-xl font-semibold mt-4 mb-2">References</h2>
-      {formData.references.map((reference, index) => (
+      {formData.references.map((reference, index: number) => (
         <div key={index} className="mb-3">
           <h3 className="font-semibold break-words">{reference.name}</h3>
           <p className="break-words">{reference.info}</p>
@@ -61,7 +68,7 @@ const ClassicLayout = ({ formData }) => (
       </p>
 
       <h2 className="text-2xl font-semibold mt-6 mb-3">Experience</h2>
-      {formData.experience.map((exp, index) => (
+      {formData.experience.map((exp, index: number) => (
         <div key={index} className="mb-4">
           <h3 className="font-semibold">{exp.company}</h3>
           <p className="italic">
@@ -72,7 +79,7 @@ const ClassicLayout = ({ formData }) => (
       ))}
 
       <h2 className="text-2xl font-semibold mt-6 mb-3">Education</h2>
-      {formData.education.map((edu, index) => (
+      {formData.education.map((edu, index: number) => (
         <div key={index} className="mb-3">
           <h3 className="font-semibold">{edu.institution}</h3>
           <p>
