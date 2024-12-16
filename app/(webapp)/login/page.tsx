@@ -73,7 +73,7 @@ export default function Login({
             <h2 className="text-lg font-semibold mb-4">Try Demo Account</h2>
             <div className="space-y-2 text-base">
               <p>
-                Email: <span className="font-mono">cyberflyx+3@gmail.com</span>
+                Email: <span className="font-mono">cyberflyx+4@gmail.com</span>
               </p>
               <p>
                 Password: <span className="font-mono">asdf1234</span>
@@ -88,6 +88,7 @@ export default function Login({
             className="rounded-md px-4 py-2 bg-inherit border mb-6"
             name="email"
             placeholder="you@example.com"
+            value="cyberflyx+4@gmail.com"
             required
           />
           <label className="text-md" htmlFor="password">
@@ -98,22 +99,23 @@ export default function Login({
             type="password"
             name="password"
             placeholder="••••••••"
+            value="asdf1234"
             required
           />
           <SubmitButton
             formAction={signIn}
-            className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
+            className="bg-green-700 rounded-md px-4 py-2 text-green-50 mb-2"
             pendingText="Signing In..."
           >
             Sign In
           </SubmitButton>
-          <SubmitButton
+          {/* <SubmitButton
             formAction={signUp}
             className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
             pendingText="Signing Up..."
           >
             Sign Up
-          </SubmitButton>
+          </SubmitButton> */}
           {searchParams?.message && (
             <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
               {searchParams.message}
